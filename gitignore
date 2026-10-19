@@ -1,0 +1,15 @@
+# --- NetBeans / Ant: se regeneran con Clean and Build ---
+build/
+dist/
+nbproject/private/
+
+# --- Archivos del sistema operativo ---
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- Temporales de Word/Office (cuando el documento está abierto) ---
+~$*
+
+# OJO: NO ignorar *.jar -> el driver web/WEB-INF/lib/mssql-jdbc-13.4.0.jre8.jar
+# tiene que subirse al repositorio para que el proyecto conecte en cualquier PC.
