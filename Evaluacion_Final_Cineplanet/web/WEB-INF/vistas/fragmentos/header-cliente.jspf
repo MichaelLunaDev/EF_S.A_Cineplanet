@@ -1,0 +1,37 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<header class="barra">
+    <div class="barra-contenido">
+        <a class="marca" href="${pageContext.request.contextPath}/TiendaServlet">
+            <span class="marca-icono"><span></span><span></span><span></span><span></span><span></span><span></span></span>
+            cineplanet
+        </a>
+
+        <nav class="menu">
+            <a href="${pageContext.request.contextPath}/TiendaServlet" class="${menu == 'tienda' ? 'activo' : ''}">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>Cartelera
+            </a>
+            <a href="${pageContext.request.contextPath}/CarritoServlet" class="${menu == 'carrito' ? 'activo' : ''}">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h12l2-8H6.2"/></svg>Carrito
+                <c:if test="${not empty sessionScope.carrito and not sessionScope.carrito.vacio}">
+                    <span class="insignia i-proximamente"><c:out value="${sessionScope.carrito.cantidadEntradas}"/></span>
+                </c:if>
+            </a>
+            <a href="${pageContext.request.contextPath}/MisEntradasServlet" class="${menu == 'misentradas' ? 'activo' : ''}">
+                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8a2 2 0 0 0 0 4v4h18v-4a2 2 0 0 1 0-4V4H3z"/><path d="M12 4v16"/></svg>Mis entradas
+            </a>
+        </nav>
+
+        <div class="sesion">
+            <span class="avatar"><c:out value="${fn:substring(sessionScope.cliente.nombres, 0, 1)}"/></span>
+            <span class="sesion-datos">
+                <span class="sesion-nombre"><c:out value="${sessionScope.cliente.nombreCompleto}"/></span><br>
+                <span class="sesion-detalle">DNI <c:out value="${sessionScope.cliente.dni}"/></span>
+            </span>
+            <form class="en-linea" action="${pageContext.request.contextPath}/LogoutServlet" method="post">
+                <input type="hidden" name="csrf" value="<c:out value='${sessionScope.csrf}'/>">
+                <button type="submit" class="boton boton-claro boton-pequeno">Salir</button>
+            </form>
+        </div>
+    </div>
+</header>
