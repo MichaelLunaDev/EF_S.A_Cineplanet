@@ -2,7 +2,8 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <header class="barra">
     <div class="barra-contenido">
-        <a class="marca" href="${pageContext.request.contextPath}/PanelServlet">
+        
+        <a href="${pageContext.request.contextPath}/PanelServlet">Inicio</a>
             <span class="marca-icono"><span></span><span></span><span></span><span></span><span></span><span></span></span>
             cineplanet
         </a>
