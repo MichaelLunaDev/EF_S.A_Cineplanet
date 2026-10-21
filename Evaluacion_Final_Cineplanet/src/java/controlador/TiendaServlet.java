@@ -21,6 +21,7 @@ public class TiendaServlet extends HttpServlet {
             Logger.getLogger(TiendaServlet.class.getName());
 
     private final ProductoDAO productoDAO = new ProductoDAO();
+    private final dao.CarteleraDAO carteleraDAO = new dao.CarteleraDAO();
 
     @Override
     protected void doGet(HttpServletRequest request,
@@ -43,16 +44,26 @@ public class TiendaServlet extends HttpServlet {
             return;
         }
 
+        // Cine elegido: se valida que sea un numero; por defecto el primero
+        int idSede = 1;
+        String sede = request.getParameter("sede");
+        if (sede != null && sede.matches("^\\d{1,3}$")) {
+            idSede = Integer.parseInt(sede);
+        }
+
         try {
+            request.setAttribute("sedes", carteleraDAO.listarSedes());
+            request.setAttribute("idSede", idSede);
+            request.setAttribute("funciones", carteleraDAO.listarFunciones(idSede));
             request.setAttribute(
                     "productos", productoDAO.listarActivos());
 
         } catch (SQLException e) {
             LOG.log(Level.SEVERE,
-                    "Error al consultar el catalogo de productos", e);
+                    "Error al consultar la cartelera o la dulceria", e);
 
             request.setAttribute("error",
-                    "No se pudo cargar la dulceria. Intenta nuevamente.");
+                    "No se pudo cargar la cartelera. Intenta nuevamente.");
         }
 
         request.getRequestDispatcher(

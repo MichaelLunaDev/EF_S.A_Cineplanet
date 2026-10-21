@@ -1,9 +1,9 @@
+<%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <header class="barra">
     <div class="barra-contenido">
-        
-        <a href="${pageContext.request.contextPath}/PanelServlet">Inicio</a>
+        <a class="marca" href="${pageContext.request.contextPath}/PanelServlet">
             <span class="marca-icono"><span></span><span></span><span></span><span></span><span></span><span></span></span>
             cineplanet
         </a>
@@ -15,16 +15,13 @@
             <a href="${pageContext.request.contextPath}/ClienteServlet" class="${menu == 'clientes' ? 'activo' : ''}">
                 <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M17 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.6"/></svg>Clientes
             </a>
-            <a href="${pageContext.request.contextPath}/PeliculaServlet" class="${menu == 'peliculas' ? 'activo' : ''}">
-                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>Películas
-            </a>
-            <a href="${pageContext.request.contextPath}/FuncionServlet" class="${menu == 'funciones' ? 'activo' : ''}">
-                <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Funciones
-            </a>
             <a href="${pageContext.request.contextPath}/EntradaServlet" class="${menu == 'entradas' ? 'activo' : ''}">
                 <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8a2 2 0 0 0 0 4v4h18v-4a2 2 0 0 1 0-4V4H3z"/><path d="M12 4v16"/></svg>Entradas
             </a>
             <c:if test="${sessionScope.usuario.admin}">
+                <a href="${pageContext.request.contextPath}/PeliculaServlet" class="${menu == 'peliculas' ? 'activo' : ''}">
+                    <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>Películas
+                </a>
                 <a href="${pageContext.request.contextPath}/VentaServlet" class="${menu == 'ventas' ? 'activo' : ''}">
                     <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Ventas
                 </a>

@@ -1,4 +1,3 @@
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
@@ -13,6 +12,9 @@
           href="${pageContext.request.contextPath}/css/cineplanet.css">
 </head>
 <body>
+<c:set var="menu" value="ventas"/>
+<%@include file="/WEB-INF/vistas/fragmentos/header-personal.jspf"%>
+<fmt:setLocale value="es_PE"/>
     <main class="contenedor">
         <section class="tarjeta">
             <h1>Reporte de ventas</h1>
@@ -24,7 +26,7 @@
                 </c:when>
                 <c:otherwise>
                     <div class="tabla-contenedor">
-                        <table>
+                        <table class="tabla">
                             <thead>
                                 <tr>
                                     <th>N.º venta</th>

@@ -82,7 +82,7 @@
             <input type="hidden" name="idFuncion"
                    value="${funcion.idFuncion}">
 
-            <div style="overflow-x: auto; padding: 12px 0;">
+            <div class="tabla-contenedor sala">
                 <c:forEach items="${mapaFilas}" var="fila">
                     <div class="fila">
                         <span class="fila-letra">

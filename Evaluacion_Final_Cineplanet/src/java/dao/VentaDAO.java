@@ -378,4 +378,84 @@ public class VentaDAO {
         int butacasDisponibles;
         BigDecimal precio;
     }
+
+    // Comprobante: la compra solo se devuelve si pertenece al cliente en sesion
+    // (WHERE idVenta = ? AND idCliente = ?). Si no es suya devuelve null.
+    public modelo.Venta buscarDelCliente(int idVenta, int idCliente) throws SQLException {
+        String sqlVenta = "SELECT v.idVenta, v.idCliente, v.idSede, v.fechaVenta, v.canal, "
+                + "v.medioPago, v.total, v.estado, s.nombre AS nombreSede "
+                + "FROM Venta v INNER JOIN Sede s ON s.idSede = v.idSede "
+                + "WHERE v.idVenta = ? AND v.idCliente = ?";
+        String sqlEntradas = "SELECT e.idEntrada, e.butaca, e.precioPagado, e.estado, "
+                + "p.titulo, f.sala, f.fechaHora "
+                + "FROM Entrada e "
+                + "INNER JOIN Funcion f ON f.idFuncion = e.idFuncion "
+                + "INNER JOIN Pelicula p ON p.idPelicula = f.idPelicula "
+                + "WHERE e.idVenta = ? AND e.idCliente = ? ORDER BY e.butaca";
+        String sqlDetalles = "SELECT d.idProducto, d.cantidad, d.precioUnit, d.subtotal, pr.nombre "
+                + "FROM DetalleVenta d "
+                + "INNER JOIN Producto pr ON pr.idProducto = d.idProducto "
+                + "INNER JOIN Venta v ON v.idVenta = d.idVenta "
+                + "WHERE d.idVenta = ? AND v.idCliente = ?";
+
+        try (Connection cn = ConexionSQL.getConexion()) {
+            modelo.Venta venta = null;
+            try (PreparedStatement ps = cn.prepareStatement(sqlVenta)) {
+                ps.setInt(1, idVenta);
+                ps.setInt(2, idCliente);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        venta = new modelo.Venta();
+                        venta.setIdVenta(rs.getInt("idVenta"));
+                        venta.setIdCliente(rs.getInt("idCliente"));
+                        venta.setIdSede(rs.getInt("idSede"));
+                        venta.setFechaVenta(rs.getTimestamp("fechaVenta"));
+                        venta.setCanal(rs.getString("canal"));
+                        venta.setMedioPago(rs.getString("medioPago"));
+                        venta.setTotal(rs.getBigDecimal("total"));
+                        venta.setEstado(rs.getString("estado"));
+                        venta.setNombreSede(rs.getString("nombreSede"));
+                    }
+                }
+            }
+            if (venta == null) {
+                return null;
+            }
+            try (PreparedStatement ps = cn.prepareStatement(sqlEntradas)) {
+                ps.setInt(1, idVenta);
+                ps.setInt(2, idCliente);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        modelo.Entrada e = new modelo.Entrada();
+                        e.setIdEntrada(rs.getInt("idEntrada"));
+                        e.setIdVenta(idVenta);
+                        e.setButaca(rs.getString("butaca"));
+                        e.setPrecioPagado(rs.getBigDecimal("precioPagado"));
+                        e.setEstado(rs.getString("estado"));
+                        e.setTituloPelicula(rs.getString("titulo"));
+                        e.setSala(rs.getInt("sala"));
+                        e.setFechaHoraFuncion(rs.getTimestamp("fechaHora"));
+                        venta.getEntradas().add(e);
+                    }
+                }
+            }
+            try (PreparedStatement ps = cn.prepareStatement(sqlDetalles)) {
+                ps.setInt(1, idVenta);
+                ps.setInt(2, idCliente);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        modelo.DetalleVenta d = new modelo.DetalleVenta();
+                        d.setIdVenta(idVenta);
+                        d.setIdProducto(rs.getInt("idProducto"));
+                        d.setCantidad(rs.getInt("cantidad"));
+                        d.setPrecioUnit(rs.getBigDecimal("precioUnit"));
+                        d.setSubtotal(rs.getBigDecimal("subtotal"));
+                        d.setNombreProducto(rs.getString("nombre"));
+                        venta.getDetalles().add(d);
+                    }
+                }
+            }
+            return venta;
+        }
+    }
 }

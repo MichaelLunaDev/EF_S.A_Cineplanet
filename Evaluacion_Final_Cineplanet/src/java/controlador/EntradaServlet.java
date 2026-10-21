@@ -1,4 +1,3 @@
-
 package controlador;
 
 import dao.EntradaDAO;
@@ -9,109 +8,65 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import modelo.Cliente;
+import modelo.Usuario;
 import util.Csrf;
 
+// Modulo Entradas del personal: consulta y anulacion de entradas vendidas.
 @WebServlet(name = "EntradaServlet", urlPatterns = {"/EntradaServlet"})
 public class EntradaServlet extends HttpServlet {
 
+    private final EntradaDAO dao = new EntradaDAO();
+
     @Override
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        HttpSession sesion = request.getSession(false);
-
-        if (sesion == null || sesion.getAttribute("cliente") == null) {
-            response.sendRedirect(
-                    request.getContextPath() + "/LoginServlet");
-            return;
-        }
-
-        Cliente cliente = (Cliente) sesion.getAttribute("cliente");
-
-        try {
-            EntradaDAO dao = new EntradaDAO();
-
-            request.setAttribute(
-                    "entradas",
-                    dao.listarPorCliente(cliente.getIdCliente()));
-
-            request.setAttribute("csrf", Csrf.generar(sesion));
-
-            request.getRequestDispatcher(
-                    "/WEB-INF/vistas/mis-entradas.jsp")
-                    .forward(request, response);
-
-        } catch (SQLException e) {
-            throw new ServletException(
-                    "No se pudieron consultar las entradas.", e);
-        }
+        mostrar(request, response);
     }
 
+    // Anular ya no es un enlace GET: es un formulario POST con token CSRF
     @Override
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
 
-        HttpSession sesion = request.getSession(false);
-
-        if (sesion == null || sesion.getAttribute("cliente") == null) {
-            response.sendRedirect(
-                    request.getContextPath() + "/LoginServlet");
+        if (!Csrf.verificar(request, response)) {
             return;
         }
 
-        if (!Csrf.esValido(request)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        String id = request.getParameter("idEntrada");
 
-        Cliente cliente = (Cliente) sesion.getAttribute("cliente");
-
-        try {
-            int idEntrada = Integer.parseInt(
-                    request.getParameter("idEntrada"));
-
-            String usuario = cliente.getCorreo();
-            String ip = request.getRemoteAddr();
-
-            EntradaDAO dao = new EntradaDAO();
-
-            boolean anulada = dao.anular(
-                    idEntrada,
-                    cliente.getIdCliente(),
-                    usuario,
-                    ip);
-
-            if (!anulada) {
-                request.setAttribute(
-                        "mensaje",
-                        "La entrada no existe, ya fue anulada o no se puede anular.");
-            } else {
-                request.setAttribute(
-                        "mensaje",
-                        "La entrada se anuló correctamente.");
+        if (id == null || !id.matches("^\\d{1,9}$")) {
+            request.setAttribute("error", "Entrada no válida.");
+        } else {
+            try {
+                boolean anulada = dao.anular(Integer.parseInt(id), usuario.getUsuario(),
+                        request.getRemoteAddr());
+                if (anulada) {
+                    request.setAttribute("mensaje", "La entrada " + id + " se anuló y la butaca quedó libre.");
+                } else {
+                    request.setAttribute("error", "La entrada no existe o ya estaba anulada.");
+                }
+            } catch (SQLException e) {
+                throw new ServletException("No se pudo procesar la anulación.", e);
             }
-
-            request.setAttribute(
-                    "entradas",
-                    dao.listarPorCliente(cliente.getIdCliente()));
-
-            request.setAttribute("csrf", Csrf.generar(sesion));
-
-            request.getRequestDispatcher(
-                    "/WEB-INF/vistas/mis-entradas.jsp")
-                    .forward(request, response);
-
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-        } catch (SQLException e) {
-            throw new ServletException(
-                    "No se pudo procesar la anulación.", e);
         }
+        mostrar(request, response);
+    }
+
+    private void mostrar(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String dni = request.getParameter("dni");
+        if (dni != null && !dni.trim().isEmpty() && !dni.trim().matches("^\\d{8}$")) {
+            request.setAttribute("error", "El DNI debe tener 8 dígitos.");
+            dni = null;
+        }
+        try {
+            request.setAttribute("entradas", dao.listarRecientes(dni == null ? null : dni.trim()));
+        } catch (SQLException e) {
+            throw new ServletException("No se pudieron consultar las entradas.", e);
+        }
+        request.getRequestDispatcher("/WEB-INF/vistas/entradas.jsp").forward(request, response);
     }
 }

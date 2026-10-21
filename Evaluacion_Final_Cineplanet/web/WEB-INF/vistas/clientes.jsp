@@ -10,7 +10,8 @@
 </head>
 <body>
 
-    <jsp:include page="/WEB-INF/vistas/fragmentos/header-personal.jspf" />
+<c:set var="menu" value="clientes"/>
+<%@include file="/WEB-INF/vistas/fragmentos/header-personal.jspf"%>
 
     <main class="contenedor">
         <h1>Gestión de Clientes</h1>
@@ -23,7 +24,7 @@
             <div class="alerta alerta-exito"><c:out value="${mensaje}"/></div>
         </c:if>
 
-        <section class="tarjeta-seccion">
+        <section class="tarjeta">
             <h2>Registrar Nuevo Cliente</h2>
             <form action="${pageContext.request.contextPath}/ClienteServlet" method="post" autocomplete="off">
          
@@ -57,7 +58,7 @@
             </form>
         </section>
 
-        <section class="tarjeta-seccion" style="margin-top: 2rem;">
+        <section class="tarjeta">
             <h2>Buscar Clientes</h2>
             <form action="${pageContext.request.contextPath}/ClienteServlet" method="get">
                 <div class="campo-fila">
@@ -67,9 +68,9 @@
             </form>
         </section>
 
-        <section class="tarjeta-seccion" style="margin-top: 2rem;">
+        <section class="tarjeta">
             <h2>Clientes Registrados</h2>
-            <table class="tabla-cine">
+            <table class="tabla">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -96,7 +97,7 @@
                         </c:when>
                         <c:otherwise>
                             <tr>
-                                <td colspan="6" style="text-align: center;">No se encontraron clientes registrados.</td>
+                                <td colspan="6" class="vacio">No se encontraron clientes registrados.</td>
                             </tr>
                         </c:otherwise>
                     </c:choose>

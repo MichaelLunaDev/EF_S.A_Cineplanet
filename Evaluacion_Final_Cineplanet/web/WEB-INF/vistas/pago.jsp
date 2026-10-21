@@ -36,10 +36,16 @@
                     Este proyecto no realiza cargos financieros reales.
                 </p>
 
-                <a class="boton boton-primario"
-                   href="${pageContext.request.contextPath}/TiendaServlet">
-                    Volver a la tienda
-                </a>
+                <div class="fila-acciones">
+                    <a class="boton boton-secundario"
+                       href="${pageContext.request.contextPath}/TiendaServlet">
+                        Volver a la tienda
+                    </a>
+                    <a class="boton boton-primario"
+                       href="${pageContext.request.contextPath}/ComprobanteServlet?id=<c:out value='${idVenta}'/>">
+                        Ver comprobante
+                    </a>
+                </div>
             </section>
         </c:when>
 

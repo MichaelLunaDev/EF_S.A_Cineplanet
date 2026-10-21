@@ -436,3 +436,136 @@ input:focus, select:focus {
     .bienvenida { flex-direction: column; align-items: flex-start; }
     .mosaico { display: none; }
 }
+
+/* ---------- Tienda: selector de cine, funciones y dulceria ---------- */
+.selector-sede {
+    display: flex;
+    gap: 12px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+.selector-sede .campo { min-width: 260px; }
+.dia-titulo {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0b1f4b;
+    margin: 22px 0 12px;
+    text-transform: capitalize;
+}
+.funciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+.funcion {
+    background: #ffffff;
+    border: 1px solid #e3e7ef;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.funcion-titulo { font-weight: 800; font-size: 16px; }
+.funcion-datos { color: #5d6678; font-size: 13px; }
+.funcion-pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 8px;
+}
+.productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+}
+.producto {
+    border: 1px solid #e3e7ef;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.producto-nombre { font-weight: 700; }
+.producto-categoria { font-size: 12px; color: #5d6678; text-transform: uppercase; letter-spacing: 0.5px; }
+.producto form { display: flex; gap: 8px; margin-top: auto; }
+.producto input[type="number"] { width: 70px; padding: 8px; }
+
+/* ---------- Resumen de la funcion (butacas, carrito, comprobante) ---------- */
+.resumen-funcion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    color: #5d6678;
+    font-size: 14px;
+}
+.resumen-funcion strong { color: #1c2434; }
+.dos-columnas {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+.lista-butacas { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ---------- Mis entradas (tipo ticket) ---------- */
+.tickets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 18px;
+}
+.ticket {
+    display: flex;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(17, 31, 75, 0.08);
+    overflow: hidden;
+    border-left: 5px solid #f39c33;
+}
+.ticket.anulada { border-left-color: #d81b60; opacity: 0.75; }
+.ticket-cuerpo { padding: 16px 18px; flex: 1; }
+.ticket-titulo { font-weight: 800; font-size: 16px; margin: 6px 0 10px; }
+.ticket-datos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 12px;
+    font-size: 13px;
+}
+.ticket-datos span { display: block; font-size: 11px; color: #5d6678; text-transform: uppercase; }
+.ticket-butaca {
+    background: #0b1f4b;
+    color: #ffffff;
+    width: 96px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-left: 2px dashed #ffffff;
+}
+.ticket-butaca span { font-size: 11px; color: #b9c4dd; }
+.ticket-butaca strong { font-size: 28px; color: #f5c842; }
+
+/* ---------- Pagina de error ---------- */
+.error-pagina {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #0b1f4b;
+    padding: 24px;
+}
+.error-tarjeta {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 40px;
+    max-width: 460px;
+    text-align: center;
+}
+.error-codigo { font-size: 64px; font-weight: 800; color: #f39c33; line-height: 1; }
+.error-tarjeta h1 { font-size: 22px; margin: 12px 0 8px; color: #0b1f4b; }
+.error-tarjeta p { color: #5d6678; margin: 0 0 24px; }
+
+@media (max-width: 860px) {
+    .dos-columnas { grid-template-columns: 1fr; }
+}

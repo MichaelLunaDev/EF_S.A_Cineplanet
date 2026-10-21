@@ -87,7 +87,6 @@ public class ClienteServlet extends HttpServlet {
 
         if (registrado) {
             Usuario u = (Usuario) sesion.getAttribute("usuario");
-            AuditoriaDAO.registrar(u.getUsuario(), "REGISTRO_CLIENTE", "Se registró exitosamente al cliente con DNI: " + dni, ip);
             request.setAttribute("mensaje", "Cliente registrado correctamente.");
         } else {
             request.setAttribute("error", "No se pudo registrar el cliente. Es posible que el DNI ya se encuentre registrado.");

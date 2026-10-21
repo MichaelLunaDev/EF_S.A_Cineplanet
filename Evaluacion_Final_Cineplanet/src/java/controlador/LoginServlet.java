@@ -35,6 +35,15 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession sesion = request.getSession(false);
+        if (sesion != null && sesion.getAttribute("usuario") != null) {
+            response.sendRedirect(request.getContextPath() + "/PanelServlet");
+            return;
+        }
+        if (sesion != null && sesion.getAttribute("cliente") != null) {
+            response.sendRedirect(request.getContextPath() + "/TiendaServlet");
+            return;
+        }
         request.getRequestDispatcher("/WEB-INF/vistas/login.jsp").forward(request, response);
     }
 
@@ -52,7 +61,8 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        identificador = identificador.trim();
+        // En minusculas: SQL Server no distingue mayusculas, asi "Admin" y "admin" comparten el contador
+        identificador = identificador.trim().toLowerCase();
         long ahora = System.currentTimeMillis();
 
         controlIntentos.putIfAbsent(identificador, new EstadoIntento());

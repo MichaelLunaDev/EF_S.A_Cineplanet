@@ -58,12 +58,13 @@ public class EntradaDAO {
         return lista;
     }
 
-    public boolean anular(int idEntrada, int idCliente, String usuario,
+    // Anulacion hecha por el personal (cajero o administrador).
+    public boolean anular(int idEntrada, String usuario,
             String ip) throws SQLException {
 
         String sqlEntrada = "SELECT idFuncion, estado "
                 + "FROM Entrada WITH (UPDLOCK, ROWLOCK) "
-                + "WHERE idEntrada = ? AND idCliente = ?";
+                + "WHERE idEntrada = ?";
 
         try (Connection cn = ConexionSQL.getConexion()) {
 
@@ -75,7 +76,6 @@ public class EntradaDAO {
 
                 try (PreparedStatement ps = cn.prepareStatement(sqlEntrada)) {
                     ps.setInt(1, idEntrada);
-                    ps.setInt(2, idCliente);
 
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
@@ -95,12 +95,11 @@ public class EntradaDAO {
 
                 String sqlAnular = "UPDATE Entrada "
                         + "SET estado = 'ANULADA' "
-                        + "WHERE idEntrada = ? AND idCliente = ? "
+                        + "WHERE idEntrada = ? "
                         + "AND estado = 'ACTIVA'";
 
                 try (PreparedStatement ps = cn.prepareStatement(sqlAnular)) {
                     ps.setInt(1, idEntrada);
-                    ps.setInt(2, idCliente);
 
                     if (ps.executeUpdate() != 1) {
                         cn.rollback();
@@ -136,5 +135,50 @@ public class EntradaDAO {
                 cn.setAutoCommit(true);
             }
         }
+    }
+
+    // Para el personal: ultimas 100 entradas vendidas, o las de un DNI si se busca.
+    public List<Entrada> listarRecientes(String dni) throws SQLException {
+        List<Entrada> lista = new ArrayList<>();
+        boolean filtrar = dni != null && dni.matches("^\\d{8}$");
+
+        String sql = "SELECT TOP 100 e.idEntrada, e.idCliente, e.idFuncion, e.idVenta, "
+                + "e.butaca, e.fechaVenta, e.precioPagado, e.estado, "
+                + "p.titulo AS tituloPelicula, f.sala, f.fechaHora, s.nombre AS nombreSede, "
+                + "c.nombres + ' ' + c.apellidos AS nombreCliente "
+                + "FROM Entrada e "
+                + "INNER JOIN Funcion f ON e.idFuncion = f.idFuncion "
+                + "INNER JOIN Pelicula p ON f.idPelicula = p.idPelicula "
+                + "INNER JOIN Sede s ON f.idSede = s.idSede "
+                + "INNER JOIN Cliente c ON c.idCliente = e.idCliente "
+                + (filtrar ? "WHERE c.dni = ? " : "")
+                + "ORDER BY e.idEntrada DESC";
+
+        try (Connection cn = ConexionSQL.getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            if (filtrar) {
+                ps.setString(1, dni);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Entrada e = new Entrada();
+                    e.setIdEntrada(rs.getInt("idEntrada"));
+                    e.setIdCliente(rs.getInt("idCliente"));
+                    e.setIdFuncion(rs.getInt("idFuncion"));
+                    e.setIdVenta(rs.getInt("idVenta"));
+                    e.setButaca(rs.getString("butaca"));
+                    e.setFechaVenta(rs.getTimestamp("fechaVenta"));
+                    e.setPrecioPagado(rs.getBigDecimal("precioPagado"));
+                    e.setEstado(rs.getString("estado"));
+                    e.setTituloPelicula(rs.getString("tituloPelicula"));
+                    e.setSala(rs.getInt("sala"));
+                    e.setFechaHoraFuncion(rs.getTimestamp("fechaHora"));
+                    e.setNombreSede(rs.getString("nombreSede"));
+                    e.setNombreCliente(rs.getString("nombreCliente"));
+                    lista.add(e);
+                }
+            }
+        }
+        return lista;
     }
 }
